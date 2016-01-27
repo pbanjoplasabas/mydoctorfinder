@@ -1,0 +1,48 @@
+	
+	<script type="text/javascript">
+		function initialize() {
+			var mapProp = {
+				center:new google.maps.LatLng(<?=$doctors[0]->latitude?>,<?=$doctors[0]->longitude?>),
+				zoom:13,
+				mapTypeId:google.maps.MapTypeId.ROADMAP
+			};
+			var map=new google.maps.Map(document.getElementById("google-map"),mapProp);
+
+			<?php
+				foreach ($doctors as $doctor) {
+					$coords[] 	= '["<a href=\'\'>Dr. '.$doctor->full_name.'</a><br />Distance: '.$doctor->distance.'", '.$doctor->latitude.', '.$doctor->longitude.']';
+				}
+			?>
+
+			var infowindow = new google.maps.InfoWindow();
+			var coords = [
+				<?=implode(",", $coords); ?>
+			];
+			var iconBase = '<?=asset("images/icons/map-marker.png")?>';
+			
+			for (i = 0; i < coords.length; i++) {
+				var position = new google.maps.LatLng(coords[i][1], coords[i][2]);
+				var marker = new google.maps.Marker({
+					position: position,
+					map: map,
+					icon: iconBase
+				});
+				google.maps.event.addListener(marker, 'click', (function(marker, i) {
+			        return function() {
+			          infowindow.setContent(coords[i][0]);
+			          infowindow.open(map, marker);
+			        }
+			    })(marker, i));
+			}
+
+		}
+		google.maps.event.addDomListener(window, 'load', initialize);
+	</script>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div id="google-map" class="google-map">
+
+			</div>
+		</div>
+	</div>
